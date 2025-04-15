@@ -1,0 +1,153 @@
+/* General Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* More modern font stack */
+    background-color: #f5f5f5; /* Lighter background for better contrast */
+    color: #2e7d32;
+    margin: 0;
+    padding: 20px 0; /* Added top/bottom padding */
+}
+
+.container {
+    max-width: 1200px; /* Increased for better layout */
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px; /* Slightly larger radius */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Softer shadow */
+}
+
+h1, h2, h3 {
+    color: hsl(0, 0%, 99%);
+    margin-bottom: 1.5rem; /* Consistent spacing */
+}
+
+/* Card Styles (matches your HTML structure) */
+.card {
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px); /* Subtle hover effect */
+}
+
+.card-header {
+    background-color: #7c7c7c;
+    color: white;
+    border-radius: 8px 8px 0 0 !important;
+    padding: 12px 20px;
+}
+
+/* Form Styles */
+.form-control, .form-select {
+    border: 1px solid #c8e6c9;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #2e7d32;
+    box-shadow: 0 0 0 0.25rem rgba(76, 175, 80, 0.25);
+}
+
+/* Buttons */
+.btn {
+    padding: 10px 20px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #4caf50;
+    border-color: #4caf50;
+}
+
+.btn-primary:hover {
+    background-color: #388e3c;
+    border-color: #388e3c;
+}
+
+.btn-danger {
+    background-color: #c7cfc9;
+}
+
+/* List Styles */
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border-color: rgba(195, 198, 198, 0.05);
+}
+
+/* Table Styles */
+.table {
+    margin-top: 20px;
+}
+
+.table th {
+    background-color: #f1f8e9;
+    color: #1b5e20;
+}
+
+.text-success {
+    color: #2e7d32 !important;
+}
+
+.text-danger {
+    color: #b6bdba !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .card {
+        margin-bottom: 15px;
+    }
+}
+/* Transaction History Styles */
+#transactionTable tr:hover {
+    background-color: #f8f9fa;
+}
+
+.text-success {
+    color: #28a745 !important;
+    font-weight: 500;
+}
+
+.text-danger {
+    color: #ea1025 !important;
+    font-weight: 500;
+}
+
+.table-responsive {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.pagination {
+    margin-top: 20px;
+}
+#combinedChart {
+    min-height: 350px;
+    width: 100%;
+  }
+  
+  .card-header .btn-group .btn {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+  }
+  
+  .card-header .btn.active {
+    background-color: #4e73df;
+    color: white;
+    border-color: #4e73df;
+  }

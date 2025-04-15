@@ -1,0 +1,8 @@
+# Custom styling (similar to CSS)
+<Button>:
+    background_color: 0.2, 0.6, 0.8, 1
+    color: 1, 1, 1, 1
+
+<TextInput>:
+    size_hint_y: None
+    height: 40

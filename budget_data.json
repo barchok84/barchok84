@@ -1,0 +1,14 @@
+{
+    "categories": {
+        "Tea Quantity": {
+            "ledger": []
+        },
+        "Bank Payment": {
+            "ledger": []
+        },
+        "Tea Plucking Amount": {
+            "ledger": []
+        }
+    },
+    "transactions": []
+}

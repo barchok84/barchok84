@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Management App</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <!-- Your CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">MukuBudget</h1>
+        
+        <div class="row">
+            <!-- Categories Section -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Categories</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="addCategoryForm">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" id="categoryName" placeholder="Category name" required>
+                                <button class="btn btn-primary" type="submit">Add</button>
+                            </div>
+                        </form>
+                        <ul class="list-group" id="categoriesList">
+                            <!-- Categories will be loaded here by JavaScript -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Transactions Section -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Transactions</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="transactionForm">
+                            <div class="mb-3">
+                                <select class="form-select" id="transactionCategory" required>
+                                    <option value="">Select category</option>
+                                    <!-- Categories will be loaded here by JavaScript -->
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <input type="number" step="0.01" class="form-control" id="transactionAmount" placeholder="Amount" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" id="transactionDescription" placeholder="Description">
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="transactionType" id="deposit" value="deposit" checked>
+                                    <label class="form-check-label" for="deposit">Deposit</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="transactionType" id="withdraw" value="withdraw">
+                                    <label class="form-check-label" for="withdraw">Withdraw</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Add Transaction</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Transfer Section -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Transfer Funds</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="transferForm">
+                            <div class="mb-3">
+                                <select class="form-select" id="fromCategory" required>
+                                    <option value="">From category</option>
+                                    <!-- Categories will be loaded here by JavaScript -->
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <select class="form-select" id="toCategory" required>
+                                    <option value="">To category</option>
+                                    <!-- Categories will be loaded here by JavaScript -->
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <input type="number" step="0.01" class="form-control" id="transferAmount" placeholder="Amount" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Transfer</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Enhanced Reports Section -->
+                <div class="card mt-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h3>Reports</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="reportType" class="form-label">Report Format</label>
+                            <select class="form-select" id="reportType">
+                                <option value="txt">Text File (.txt)</option>
+                                <option value="csv">CSV File (.csv)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reportDateRange" class="form-label">Date Range</label>
+                            <select class="form-select" id="reportDateRange">
+                                <option value="all">All Time</option>
+                                <option value="today">Today</option>
+                                <option value="week">This Week</option>
+                                <option value="month">This Month</option>
+                                <option value="year">This Year</option>
+                                <option value="custom">Custom Range</option>
+                            </select>
+                        </div>
+                        <div id="customDateRange" class="row g-2 mt-2 d-none">
+                            <div class="col-md-6">
+                                <input type="date" class="form-control" id="startDate">
+                            </div>
+                            <div class="col-md-6">
+                                <input type="date" class="form-control" id="endDate">
+                            </div>
+                        </div>
+                        <button id="generateReport" class="btn btn-success w-100 mt-3">
+                            <i class="bi bi-file-earmark-text"></i> Generate Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Transaction History -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Transaction History</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <select class="form-select" id="historyCategory">
+                                <option value="">All Categories</option>
+                                <!-- Categories will be loaded here by JavaScript -->
+                            </select>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Category</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactionHistory">
+                                    <!-- Transactions will be loaded here by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- graph ...........................................................................-->
+                <div class="card mt-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Spending Analysis</h4>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary active" id="viewCategories">By Category</button>
+                            <button class="btn btn-outline-primary" id="viewTrend">Trend View</button>
+                        </div>
+                    </div>
+                    <div class="card-body position-relative">
+                        <canvas id="combinedChart" height="350"></canvas>
+                        <div id="chartLoading" class="position-absolute top-50 start-50 translate-middle">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <div id="chartError" class="alert alert-danger d-none"></div>
+                        <div id="chartNoData" class="alert alert-info d-none">No spending data available</div>
+                    </div>
+                </div>
+                
+                <script>
+                // Chart variables
+                let spendingChart;
+                let currentView = 'categories'; // 'categories' or 'trend'
+                
+                // Initialize chart on page load
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Set up view toggle buttons
+                    document.getElementById('viewCategories')?.addEventListener('click', function() {
+                        currentView = 'categories';
+                        this.classList.add('active');
+                        document.getElementById('viewTrend').classList.remove('active');
+                        updateChartView();
+                    });
+                    
+                    document.getElementById('viewTrend')?.addEventListener('click', function() {
+                        currentView = 'trend';
+                        this.classList.add('active');
+                        document.getElementById('viewCategories').classList.remove('active');
+                        updateChartView();
+                    });
+                    
+                    // Load initial data
+                    updateChartView();
+                });
+                
+                // Update chart when data changes
+                function updateChartView() {
+                    const chartCanvas = document.getElementById('combinedChart');
+                    const loadingEl = document.getElementById('chartLoading');
+                    const errorEl = document.getElementById('chartError');
+                    const noDataEl = document.getElementById('chartNoData');
+                    
+                    // Show loading state
+                    loadingEl.classList.remove('d-none');
+                    errorEl.classList.add('d-none');
+                    noDataEl.classList.add('d-none');
+                    chartCanvas.classList.add('d-none');
+                    
+                    fetch('/api/transactions')
+                        .then(response => {
+                            if (!response.ok) throw new Error('Failed to fetch transactions');
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (!data.transactions || data.transactions.length === 0) {
+                                throw new Error('No transaction data available');
+                            }
+                            renderSpendingChart(data.transactions);
+                        })
+                        .catch(error => {
+                            console.error('Chart error:', error);
+                            loadingEl.classList.add('d-none');
+                            errorEl.textContent = error.message;
+                            errorEl.classList.remove('d-none');
+                        });
+                }
+                
+                // Process transaction data for the chart
+                function prepareChartData(transactions) {
+                    const categoryData = {};
+                    const monthlyData = {};
+                    
+                    // Filter only spending transactions (negative amounts)
+                    transactions
+                        .filter(t => t.amount < 0 && t.category && t.date)
+                        .forEach(transaction => {
+                            const amount = Math.abs(transaction.amount);
+                            const date = new Date(transaction.date);
+                            const monthKey = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2, '0')}`;
+                            
+                            // Category totals
+                            categoryData[transaction.category] = (categoryData[transaction.category] || 0) + amount;
+                            
+                            // Monthly data - properly accumulate by month
+                            if (!monthlyData[monthKey]) {
+                                monthlyData[monthKey] = 0;
+                            }
+                            monthlyData[monthKey] += amount;
+                        });
+                    
+                    // Sort months chronologically
+                    const sortedMonths = Object.keys(monthlyData).sort((a, b) => {
+                        return new Date(a) - new Date(b);
+                    });
+                    
+                    return {
+                        categories: Object.keys(categoryData).sort(),
+                        categoryTotals: Object.keys(categoryData).sort().map(c => categoryData[c]),
+                        months: sortedMonths,
+                        monthlyTotals: sortedMonths.map(m => monthlyData[m])
+                    };
+                }
+                
+                // Render the combined chart
+                function renderSpendingChart(transactions) {
+                    const chartCanvas = document.getElementById('combinedChart');
+                    const loadingEl = document.getElementById('chartLoading');
+                    const errorEl = document.getElementById('chartError');
+                    const noDataEl = document.getElementById('chartNoData');
+                    
+                    // Hide loading and show canvas
+                    loadingEl.classList.add('d-none');
+                    errorEl.classList.add('d-none');
+                    
+                    // Destroy previous chart if exists
+                    if (spendingChart) {
+                        spendingChart.destroy();
+                    }
+                    
+                    // Process data
+                    const chartData = prepareChartData(transactions);
+                    
+                    // Check if we have data to display
+                    if (chartData.categories.length === 0 || chartData.months.length === 0) {
+                        noDataEl.classList.remove('d-none');
+                        chartCanvas.classList.add('d-none');
+                        return;
+                    }
+                    
+                    try {
+                        if (currentView === 'categories') {
+                            // Category view - Bar chart with categories on x-axis
+                            spendingChart = new Chart(chartCanvas, {
+                                type: 'bar',
+                                data: {
+                                    labels: chartData.categories,
+                                    datasets: [{
+                                        label: 'Spending by Category',
+                                        data: chartData.categoryTotals,
+                                        backgroundColor: generateCategoryColors(chartData.categories.length),
+                                        borderColor: '#4e73df',
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        title: {
+                                            display: true,
+                                            text: 'Spending by Category'
+                                        },
+                                        tooltip: {
+                                            callbacks: {
+                                                label: (context) => `${context.raw.toFixed(2)}`
+                                            }
+                                        },
+                                        legend: {
+                                            display: false
+                                        }
+                                    },
+                                    scales: {
+                                        x: {
+                                            title: {
+                                                display: true,
+                                                text: 'Categories'
+                                            },
+                                            grid: {
+                                                display: false
+                                            }
+                                        },
+                                        y: {
+                                            title: {
+                                                display: true,
+                                                text: 'Amount ($)'
+                                            },
+                                            beginAtZero: true,
+                                            ticks: {
+                                                callback: value => `${value}`
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        } else {
+                            // Trend view - Line chart showing spending trends
+                            spendingChart = new Chart(chartCanvas, {
+                                type: 'line',
+                                data: {
+                                    labels: chartData.months,
+                                    datasets: [{
+                                        label: 'Monthly Spending Trend',
+                                        data: chartData.monthlyTotals,
+                                        borderColor: '#4e73df',
+                                        backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                                        borderWidth: 2,
+                                        tension: 0.4,
+                                        fill: true,
+                                        pointRadius: 4,
+                                        pointBackgroundColor: '#4e73df'
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        title: {
+                                            display: true,
+                                            text: 'Monthly Spending Trend'
+                                        },
+                                        tooltip: {
+                                            callbacks: {
+                                                label: (context) => `${context.raw.toFixed(2)}`
+                                            }
+                                        }
+                                    },
+                                    scales: {
+                                        x: {
+                                            title: {
+                                                display: true,
+                                                text: 'Months'
+                                            },
+                                            grid: {
+                                                display: false
+                                            }
+                                        },
+                                        y: {
+                                            title: {
+                                                display: true,
+                                                text: 'Amount (Kes)'
+                                            },
+                                            beginAtZero: true,
+                                            ticks: {
+                                                callback: value => `${value}`
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                        
+                        chartCanvas.classList.remove('d-none');
+                    } catch (error) {
+                        console.error("Chart rendering error:", error);
+                        errorEl.textContent = 'Failed to render chart: ' + error.message;
+                        errorEl.classList.remove('d-none');
+                        chartCanvas.classList.add('d-none');
+                    }
+                }
+                
+                // Generate distinct colors for categories
+                function generateCategoryColors(count) {
+                    const colors = [];
+                    const hueStep = 360 / Math.max(1, count);
+                    for (let i = 0; i < count; i++) {
+                        colors.push(`hsla(${(i * hueStep) % 360}, 70%, 60%, 0.7)`);
+                    }
+                    return colors;
+                }
+                </script>
+                
+                <style>
+                /* Chart container styling */
+                #combinedChart {
+                    min-height: 350px;
+                    width: 100%;
+                }
+                
+                /* Loading spinner styling */
+                #chartLoading {
+                    z-index: 10;
+                }
+                
+                /* Alert message styling */
+                #chartError, #chartNoData {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 80%;
+                    text-align: center;
+                }
+                
+                /* Button group styling */
+                .card-header .btn-group .btn {
+                    padding: 0.25rem 0.75rem;
+                    font-size: 0.875rem;
+                }
+                
+                .card-header .btn.active {
+                    background-color: #4e73df;
+                    color: white;
+                    border-color: #4e73df;
+                }
+                </style>
+                 <!-- graph................................................................................... -->
+            </div>
+        </div>
+    </div>
+    
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Your JavaScript -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <!-- Report Generation JavaScript -->
+    <script src="{{ url_for('static', filename='js/reports.js') }}"></script>
+    
+</body>
+</html>
